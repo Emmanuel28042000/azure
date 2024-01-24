@@ -1,8 +1,7 @@
-  jobs:
+jobs:
 - job: Build
   pool:
     vmImage: 'windows-latest'
   steps:
   - script: echo 'Hello, World!'
     displayName: 'Print Hello World'
-
