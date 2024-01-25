@@ -1,7 +1,14 @@
+# azure-pipelines.yml
+
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
 jobs:
-- job: Build
-  pool:
-    vmImage: 'windows-latest'
+- job: HelloWorldJob
   steps:
-  - script: echo 'Hello, World!'
+  - powershell: |
+      Write-Host "Hello, World!"
     displayName: 'Print Hello World'
