@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  Image: 'default'
+  name: 'default'
 
 variables:
   # Define your database connection details
