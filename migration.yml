@@ -1,0 +1,52 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'default'
+
+variables:
+  # Define your database connection details
+  sourceDbHost: '127.0.0.1'
+  sourceDbName: 'local'
+  sourceDbUser: 'root'
+  sourceDbPassword: 'root@123'
+
+  targetDbHost: 'newmachine.mysql.database.azure.com'
+  targetDbName: 'local'
+  targetDbUser: 'emmi'
+  targetDbPassword: 'mysql@123'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '3.x'
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- script: |
+    # Export data from source MySQL database
+    mysqldump -h $(127.0.0.1) -u $(root) -p$(root@123) $(local) > export.sql
+  displayName: 'Export MySQL Data'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: 'export.sql'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'ExportedSQL'
+
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'ExportedSQL'
+    downloadPath: '$(Build.SourcesDirectory)'
+
+- script: |
+    # Import data into target MySQL database
+    mysql -h $(newmachine.mysql.database.azure.com) -u $(emmi) -p$(mysql@123) $(local) < export.sql
+  displayName: 'Import MySQL Data'
