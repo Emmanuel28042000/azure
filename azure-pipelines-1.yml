@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  name: default  # Specify the name of the authorized agent pool
 
 steps:
 - script: echo Hello, world!
